@@ -9,6 +9,8 @@ module Test
           end
         end
         module InstanceMethods
+          attr_reader :controller
+          
           # Sets up the test environment for functional tests
           def setup_request_environment(controller_class)
             controller_class.class_eval do
@@ -17,8 +19,8 @@ module Test
               end
             end
             @controller = controller_class.new
-            @request    = TestRequest.new
-            @response   = TestResponse.new
+            @controller.request = @request = ActionController::TestRequest.new
+            @response = ActionController::TestResponse.new
           end
         end
       end
