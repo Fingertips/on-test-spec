@@ -8,11 +8,7 @@ module Test
         # Test that we were redirected to a specific url:
         #   should.redirect :controller => 'foo', :action => 'bar'
         # or:
-        #   should.be.redirected foo_url(@foo)
-        # or:
         #   should.redirect_to :controller => 'foo', :action => 'bar', :secure => true
-        # or:
-        #   should.be.redirected foo_url, :secure => true
         def redirect(*args)
           if args.empty?
             assert_response @object.response.redirected_to, :redirect
