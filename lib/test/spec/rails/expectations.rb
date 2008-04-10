@@ -42,6 +42,7 @@ module Test
         def differ(*args)
           assert_difference(*args, &@object)
         end
+        alias change differ
       end
       module ShouldNotExpectations
         
@@ -56,6 +57,7 @@ module Test
         def differ(*args)
           assert_no_difference(*args, &@object)
         end
+        alias change differ
       end
     end
   end
