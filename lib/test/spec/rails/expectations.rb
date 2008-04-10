@@ -34,12 +34,27 @@ module Test
         def validate
           assert_valid @object
         end
+        
+        # Tests whether the evaluation of the expression changes.
+        #
+        # lambda { Norm.create }.should.differ('Norm.count')
+        # lambda { Norm.create; Norm.create }.should.differ('Norm.count', +2)
+        def differ(*args)
+          assert_difference(*args, &@object)
+        end
       end
       module ShouldNotExpectations
         
         # Test that an object is not valid
         def validate
           assert !@object.valid?
+        end
+        
+        # Tests that the evaluation of the expression shouldn't change
+        #
+        # lambda { Norm.new }.should.not.differ('Norm.count')
+        def differ(*args)
+          assert_no_difference(*args, &@object)
         end
       end
     end
