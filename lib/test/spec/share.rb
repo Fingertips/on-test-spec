@@ -25,7 +25,6 @@ module Kernel
     m.instance_variable_set(:@specs_block, specs_block)
   end
   
-  
   # Returns the specified anonymous module. See +share+ for an exmaple.
   def shared_specs_for(name)
     $shared_specs[name]
