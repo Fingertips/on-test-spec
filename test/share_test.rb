@@ -3,7 +3,9 @@ require 'test/spec'
 
 require File.expand_path('../../lib/test/spec/share', __FILE__)
 
-class Mock
+class DummyMock
+  extend SharedSpecsInclusionHelper
+  
   class << self
     attr_reader :times_called
     def it(name, &block)
@@ -12,9 +14,6 @@ class Mock
     end
   end
 end
-
-class DummyTestClass1 < Mock; end
-class DummyTestClass2 < Mock; end
 
 share "Dummy" do
   it("spec 1") {}
@@ -34,21 +33,20 @@ describe "Kernel#share" do
     $shared_specs.length.should == before + 1
   end
   
-  it "should create a new module to hold the specs" do
-    $shared_specs['Dummy'].should.be.instance_of Module
-  end
-  
-  it "should define Module::included(klass) method, which will define the shared specs on a test class once it's included" do
-    DummyTestClass1.send(:include, $shared_specs['Dummy'])
-    DummyTestClass1.times_called.should.be 2
+  it "should have stored the proc that holds the specs" do
+    $shared_specs['Dummy'].should.be.instance_of Proc
   end
 end
 
-describe "Kernel#shared_specs_for" do
+describe "SharedSpecsInclusionHelper::shared_specs_for" do
+  it "should have extended Test::Unit::TestCase" do
+    Test::Unit::TestCase.should.respond_to :shared_specs_for
+  end
+  
   it "should return the specified module containing the shared specs" do
-    DummyTestClass2.class_eval do
-      include shared_specs_for('Dummy')
+    DummyMock.class_eval do
+      shared_specs_for 'Dummy'
     end
-    DummyTestClass2.times_called.should.be 2
+    DummyMock.times_called.should.be 2
   end
 end
