@@ -19,13 +19,12 @@ module Kernel
   #
   #   2 tests, 2 assertions, 0 failures, 0 errors
   def share(name, &specs_block)
-    mod = Module.new
-    mod.instance_variable_set(:@specs_block, specs_block)
-    def mod.included(klass)
-      klass.class_eval(&@specs_block)
+    m = $shared_specs[name] = Module.new do
+      def self.included(klass); klass.class_eval(&@specs_block); end
     end
-    $shared_specs[name] = mod
+    m.instance_variable_set(:@specs_block, specs_block)
   end
+  
   
   # Returns the specified anonymous module. See +share+ for an exmaple.
   def shared_specs_for(name)
