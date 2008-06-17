@@ -43,6 +43,23 @@ module Test
           assert_difference(*args, &@object)
         end
         alias change differ
+        
+        # Tests whether certain pages are cached.
+        #
+        # lambda { get :index }.should.cache_pages(posts_path)
+        # lambda { get :show, :id => post }.should.cache_pages(post_path(post), formatted_posts_path(:js, post))
+        def cache_pages(*pages, &block)
+          if block
+            block.call
+          else
+            @object.call
+          end
+          cache_dir = ActionController::Base.page_cache_directory
+          files = Dir.glob("#{cache_dir}/**/*").map do |filename|
+            filename[cache_dir.length..-1]
+          end
+          assert pages.all? { |page| files.include?(page) }
+        end
       end
       module ShouldNotExpectations
         
