@@ -12,6 +12,8 @@ module Test
         def redirect(*args)
           if args.empty?
             assert_response @object.response.redirected_to, :redirect
+          elsif args.length == 1 and args.first.is_a?(String)
+            assert_equal args.first, @object.response.redirected_to
           else
             options = args.extract_options!
             if secure = options.delete(:secure)
