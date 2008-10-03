@@ -15,7 +15,7 @@ class Class
           if allow_#{method}
             original_#{method}(*args)
           else
-            raise RuntimeError, "You're trying to call `#{method}', which you probably don't want in a test."
+            raise RuntimeError, "You're trying to call `#{method}' on `#{self}', which you probably don't want in a test."
           end
         end
       }, binding, __FILE__, __LINE__
@@ -44,7 +44,7 @@ class Module
           if allow_#{method}
             original_#{method}(*args)
           else
-            raise RuntimeError, "You're trying to call `#{method}', which you probably don't want in a test."
+            raise RuntimeError, "You're trying to call `#{method}' on `#{self}', which you probably don't want in a test."
           end
         end
       }, binding, __FILE__, __LINE__
