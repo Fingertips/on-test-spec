@@ -21,6 +21,9 @@ module Test
             @controller = controller_class.new
             @controller.request = @request = ActionController::TestRequest.new
             @response = ActionController::TestResponse.new
+            
+            @controller.params = {}
+            @controller.send(:initialize_current_url)
           end
         end
       end
