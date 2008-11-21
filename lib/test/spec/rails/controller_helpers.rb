@@ -2,10 +2,6 @@ module Test
   module Spec
     module Rails
       module Controller
-        # include ActionController::Assertions::ResponseAssertions
-        # include ActionController::Assertions::ResponseAssertions
-        # include ActionController::Assertions::ResponseAssertions
-        
         module ClassMethods
           # Sets up the test environment before every functional test
           def tests(controller_class)
@@ -13,7 +9,7 @@ module Test
           end
         end
         module InstanceMethods
-          include ActionController::TestCase::Assertions
+          include Assertions
           
           attr_reader :controller
           

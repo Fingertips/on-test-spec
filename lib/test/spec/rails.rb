@@ -2,17 +2,19 @@ require 'test/spec'
 
 module Test
   module Spec
+    module Rails
+      module Assertions
+        include ActiveSupport::Testing::Assertions
+        include ActionController::TestCase::Assertions
+      end
+    end
+    
     class Should
-      include ActiveSupport::Testing::Assertions
-      include ActionController::Assertions
+      include Rails::Assertions
     end
     
     class ShouldNot
-      include ActiveSupport::Testing::Assertions
-      include ActionController::Assertions
-    end
-    
-    module Rails
+      include Rails::Assertions
     end
   end
 end
@@ -33,7 +35,7 @@ module Kernel
   end
   
   private :context, :xcontext
-
+  
   alias :describe :context
   alias :xdescribe :xcontext
 end

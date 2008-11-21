@@ -2,6 +2,8 @@ module Test
   module Spec
     module Rails
       module ShouldExpectations
+        include Assertions
+        
         # Test that we were redirected somewhere:
         #   should.redirect
         #
@@ -69,6 +71,7 @@ module Test
         end
       end
       module ShouldNotExpectations
+        include Assertions
         
         # Test that an object is not valid
         def validate
