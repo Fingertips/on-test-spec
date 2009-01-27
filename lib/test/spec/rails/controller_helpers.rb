@@ -1,3 +1,5 @@
+require 'action_controller/test_case'
+
 module Test
   module Spec
     module Rails
@@ -9,7 +11,8 @@ module Test
           end
         end
         module InstanceMethods
-          include Assertions
+          include ActionController::TestProcess
+          include ActionController::TestCase::Assertions
           
           attr_reader :controller
           
