@@ -2,7 +2,7 @@ module Test
   module Spec
     module Rails
       module ShouldExpectations
-        include Assertions
+        include ActiveSupport::Testing::Assertions
         
         # Test that we were redirected somewhere:
         #   should.redirect
@@ -69,9 +69,15 @@ module Test
         def dom_equal(expected)
           assert_dom_equal expected, @object
         end
+        
+        # Tests if the array of records is the same, order may vary
+        def equal_records(expected)
+          assert (@object.map(&:id) - expected.map(&:id)).empty?
+        end
       end
+      
       module ShouldNotExpectations
-        include Assertions
+        include ActiveSupport::Testing::Assertions
         
         # Test that an object is not valid
         def validate
@@ -89,6 +95,13 @@ module Test
         # Test that two HTML strings are not equivalent
         def dom_equal(expected)
           assert_dom_not_equal expected, @object
+        end
+        
+        # Tests if the array of records is not the same, order may vary
+        def equal_records(expected)
+          left = @object.map(&:id) - expected.map(&:id)
+          right = expected.map(&:id) - @object.map(&:id)
+          assert !(left + right).empty?
         end
       end
     end
