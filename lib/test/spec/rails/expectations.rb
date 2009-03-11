@@ -1,6 +1,12 @@
 module Test
   module Spec
     module Rails
+      module Helpers
+        def self.inspect_records(records)
+          "[#{records.map { |record| "#{record.class}[#{record.id}]" }.join(', ')}]"
+        end
+      end
+      
       module ShouldExpectations
         include ActiveSupport::Testing::Assertions
         
@@ -72,7 +78,10 @@ module Test
         
         # Tests if the array of records is the same, order may vary
         def equal_records(expected)
-          assert (@object.map(&:id) - expected.map(&:id)).empty?
+          assert(
+            (@object.map(&:id) - expected.map(&:id)).empty?,
+            "#{Helpers.inspect_records(@object)} does not have the same records as #{Helpers.inspect_records(expected)}"
+          )
         end
       end
       
@@ -101,7 +110,10 @@ module Test
         def equal_records(expected)
           left = @object.map(&:id) - expected.map(&:id)
           right = expected.map(&:id) - @object.map(&:id)
-          assert !(left + right).empty?
+          assert(
+            !(left + right).empty?,
+            "#{Helpers.inspect_records(@object)} has the same records as #{Helpers.inspect_records(expected)}"
+          )
         end
       end
     end
