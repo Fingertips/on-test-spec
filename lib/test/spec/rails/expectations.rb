@@ -78,8 +78,10 @@ module Test
         
         # Tests if the array of records is the same, order may vary
         def equal_records(expected)
+          left = @object.map(&:id) - expected.map(&:id)
+          right = expected.map(&:id) - @object.map(&:id)
           assert(
-            (@object.map(&:id) - expected.map(&:id)).empty?,
+            (left + right).empty?,
             "#{Helpers.inspect_records(@object)} does not have the same records as #{Helpers.inspect_records(expected)}"
           )
         end
