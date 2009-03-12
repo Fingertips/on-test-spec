@@ -39,6 +39,9 @@ describe "Record expectations" do
     [stub(:id => 1)].should.equal_records [stub(:id => 1)]
     assertion_was_success
     
+    [stub(:id => 1), stub(:id => 1)].should.equal_records [stub(:id => 1), stub(:id => 1)]
+    assertion_was_success
+    
     [stub(:id => 1), stub(:id => 2)].should.equal_records [stub(:id => 1), stub(:id => 2)]
     assertion_was_success
     
@@ -55,6 +58,15 @@ describe "Record expectations" do
   it "should fail when assertions are not corrent" do
     [].should.not.equal_records []
     assertion_was_failure_with_message("[] has the same records as []")
+    
+    [stub(:id => 1), stub(:id => 1)].should.equal_records [stub(:id => 1)]
+    assertion_was_failure_with_message("[Mocha::Mock[1], Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1]]")
+    
+    [stub(:id => 1), stub(:id => 2)].should.equal_records [stub(:id => 1), stub(:id => 1), stub(:id => 2)]
+    assertion_was_failure_with_message("[Mocha::Mock[1], Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[1], Mocha::Mock[2]]")
+    
+    [stub(:id => 1), stub(:id => 2), stub(:id => 1)].should.equal_records [stub(:id => 1), stub(:id => 2), stub(:id => 2)]
+    assertion_was_failure_with_message("[Mocha::Mock[1], Mocha::Mock[2], Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[2], Mocha::Mock[2]]")
     
     [stub(:id => 1)].should.not.equal_records [stub(:id => 1)]
     assertion_was_failure_with_message("[Mocha::Mock[1]] has the same records as [Mocha::Mock[1]]")

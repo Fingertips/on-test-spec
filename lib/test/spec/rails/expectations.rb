@@ -78,12 +78,12 @@ module Test
         
         # Tests if the array of records is the same, order may vary
         def equal_records(expected)
-          left = @object.map(&:id) - expected.map(&:id)
-          right = expected.map(&:id) - @object.map(&:id)
-          assert(
-            (left + right).empty?,
-            "#{Helpers.inspect_records(@object)} does not have the same records as #{Helpers.inspect_records(expected)}"
-          )
+          message = "#{Helpers.inspect_records(@object)} does not have the same records as #{Helpers.inspect_records(expected)}"
+          
+          left = @object.map(&:id).sort
+          right = expected.map(&:id).sort
+          
+          assert(left == right, message)
         end
       end
       
@@ -110,12 +110,12 @@ module Test
         
         # Tests if the array of records is not the same, order may vary
         def equal_records(expected)
-          left = @object.map(&:id) - expected.map(&:id)
-          right = expected.map(&:id) - @object.map(&:id)
-          assert(
-            !(left + right).empty?,
-            "#{Helpers.inspect_records(@object)} has the same records as #{Helpers.inspect_records(expected)}"
-          )
+          message = "#{Helpers.inspect_records(@object)} has the same records as #{Helpers.inspect_records(expected)}"
+          
+          left = @object.map(&:id).sort
+          right = expected.map(&:id).sort
+          
+          assert(left != right, message)
         end
       end
     end
