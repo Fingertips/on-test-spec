@@ -50,7 +50,11 @@ module Test
         # lambda { Norm.create }.should.differ('Norm.count')
         # lambda { Norm.create; Norm.create }.should.differ('Norm.count', +2)
         def differ(*args)
-          assert_difference(*args, &@object)
+          result = nil
+          assert_difference(*args) do
+            result = @object.call
+          end
+          result
         end
         alias change differ
         
@@ -99,7 +103,11 @@ module Test
         #
         # lambda { Norm.new }.should.not.differ('Norm.count')
         def differ(*args)
-          assert_no_difference(*args, &@object)
+          result = nil
+          assert_no_difference(*args) do
+            result = @object.call
+          end
+          result
         end
         alias change differ
         
