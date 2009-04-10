@@ -47,9 +47,12 @@ module Test
         
         # Tests whether the evaluation of the expression changes.
         #
-        # lambda { Norm.create }.should.differ('Norm.count')
-        # lambda { Norm.create; Norm.create }.should.differ('Norm.count', +2)
-        # lambda { Norm.create; Option.create }.should.differ('Norm.count' => +2, 'Option.count' => +1)
+        #   lambda { Norm.create }.should.differ('Norm.count')
+        #   lambda { Norm.create; Norm.create }.should.differ('Norm.count', +2)
+        #   lambda { Norm.create; Option.create }.should.differ('Norm.count', +2, 'Option.count', +1)
+        #
+        #   norm = lambda { Norm.create }.should.differ('Norm.count')
+        #   norm.name.should == 'Latency'
         def differ(*expected)
           block_binding = @object.send(:binding)
           before = expected.in_groups_of(2).map do |expression, _|
@@ -70,8 +73,8 @@ module Test
         
         # Tests whether certain pages are cached.
         #
-        # lambda { get :index }.should.cache_pages(posts_path)
-        # lambda { get :show, :id => post }.should.cache_pages(post_path(post), formatted_posts_path(:js, post))
+        #   lambda { get :index }.should.cache_pages(posts_path)
+        #   lambda { get :show, :id => post }.should.cache_pages(post_path(post), formatted_posts_path(:js, post))
         def cache_pages(*pages, &block)
           if block
             block.call
@@ -111,8 +114,11 @@ module Test
         
         # Tests that the evaluation of the expression shouldn't change
         #
-        # lambda { Norm.new }.should.not.differ('Norm.count')
-        # lambda { Norm.new }.should.not.differ('Norm.count', 'Option.count')
+        #   lambda { Norm.new }.should.not.differ('Norm.count')
+        #   lambda { Norm.new }.should.not.differ('Norm.count', 'Option.count')
+        #
+        #   norm = lambda { Norm.new }.should.not.differ('Norm.count')
+        #   norm.token.should.match /(\d\w){4}/
         def differ(*expected)
           block_binding = @object.send(:binding)
           before = expected.map do |expression|
