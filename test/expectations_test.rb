@@ -15,7 +15,11 @@ module TestingAssertionsThemselves
   @assertions = []
   
   def assert(*args)
-    TestingAssertionsThemselves.assertions << args
+    TestingAssertionsThemselves.assertions << [:assert, args]
+  end
+  
+  def assert_equal(*args)
+    TestingAssertionsThemselves.assertions << [:assert_equal, args]
   end
   
   def self.last_assertion
@@ -31,69 +35,306 @@ class Test::Spec::ShouldNot
   include TestingAssertionsThemselves
 end
 
+module AssertionAssertions
+  def assert_assert_success(message=nil)
+    assertion = TestingAssertionsThemselves.last_assertion
+    
+    assert_equal :assert, assertion[0]
+    assert assertion[1][0]
+    assert_equal(message, assertion[2][1]) if message
+  end
+  
+  def assert_assert_failure(message=nil)
+    assertion = TestingAssertionsThemselves.last_assertion
+    
+    assert_equal :assert, assertion[0]
+    assert !assertion[1][0]
+    assert_equal(message, assertion[1][1]) if message
+  end
+  
+  def assert_assert_equal_success(message=nil)
+    assertion = TestingAssertionsThemselves.last_assertion
+    
+    assert_equal :assert_equal, assertion[0]
+    assert_equal assertion[1][0], assertion[1][1]
+    assert_equal(message, assertion[1][2]) if message
+  end
+  
+  def assert_assert_equal_failure(message=nil)
+    assertion = TestingAssertionsThemselves.last_assertion
+    
+    assert_equal :assert_equal, assertion[0]
+    assert_not_equal assertion[1][0], assertion[1][1]
+    assert_equal(message, assertion[1][2]) if message
+  end
+end
+
+class Pony
+  class << self
+    attr_accessor :count
+  end
+end
+
+describe "Differ expectations" do
+  include AssertionAssertions
+  
+  before do
+    TestingAssertionsThemselves.assertions = []
+  end
+  
+  it "should succeed when the expected difference occurs on a local variable" do
+    count = 1
+    lambda {
+      count = 2
+    }.should.differ('count')
+    assert_assert_equal_success
+  end
+  
+  it "should succeed when the expected difference occurs on an instance variable in the current scope" do
+    @count = 1
+    lambda {
+      @count = 2
+    }.should.differ('@count')
+    assert_assert_equal_success
+  end
+  
+  it "should succeed when the expected difference occurs on a class in the current scope" do
+    Pony.count = 1
+    lambda {
+      Pony.count = 2
+    }.should.differ('Pony.count')
+    assert_assert_equal_success
+  end
+  
+  it "should succeed when the difference is explicitly stated" do
+    Pony.count = 1
+    lambda {
+      Pony.count = 3
+    }.should.differ('Pony.count', +2)
+    assert_assert_equal_success
+  end
+  
+  it "should fail when the expected difference does not occur" do
+    Pony.count = 1
+    lambda {
+      Pony.count = 3
+    }.should.differ('Pony.count')
+    assert_assert_equal_failure('"Pony.count" didn\'t change by 1')
+  end
+  
+  it "should fail when the explicitly stated difference does not occur" do
+    Pony.count = 1
+    lambda {
+      Pony.count = 3
+    }.should.differ('Pony.count', +5)
+    assert_assert_equal_failure('"Pony.count" didn\'t change by 5')
+  end
+  
+  it "should return the return value of the block" do
+    Pony.count = 3
+    result = lambda {
+      Pony.count += 1
+    }.should.differ('Pony.count', 1)
+    assert_equal 4, result, "differ didn't return the block result"
+  end
+  
+  it "should succeed when multiple expected differences occur" do
+    count = 1
+    Pony.count = 1
+    lambda {
+      count = 2
+      Pony.count = 2
+    }.should.differ('Pony.count', +1, 'count', +1)
+    
+    TestingAssertionsThemselves.assertions.each do |assertion, args|
+      assert_equal :assert_equal, assertion
+      assert_equal args[0], args[1]
+    end
+  end
+  
+  it "should fail when first of the expected differences does not occur" do
+    count = 1
+    Pony.count = 1
+    lambda {
+      count += 4
+    }.should.differ('Pony.count', +2, 'count', +4)
+    
+    assertion, args = TestingAssertionsThemselves.assertions.first
+    assert_equal :assert_equal, assertion
+    assert_not_equal(args[0], args[1])
+    assert_equal '"Pony.count" didn\'t change by 2', args[2]
+    
+    assertion, args = TestingAssertionsThemselves.assertions.second
+    assert_equal :assert_equal, assertion
+    assert_equal(args[0], args[1])
+  end
+  
+  it "should fail when second of the expected differences does not occur" do
+    count = 1
+    Pony.count = 1
+    lambda {
+      Pony.count += 2
+    }.should.differ('Pony.count', +2, 'count', +4)
+    
+    assertion, args = TestingAssertionsThemselves.assertions.first
+    assert_equal :assert_equal, assertion
+    assert_equal(args[0], args[1])
+    
+    assertion, args = TestingAssertionsThemselves.assertions.second
+    assert_equal :assert_equal, assertion
+    assert_not_equal(args[0], args[1])
+    assert_equal '"count" didn\'t change by 4', args[2]
+  end
+end
+
+describe "NotDiffer expectations" do
+  include AssertionAssertions
+  
+  before do
+    TestingAssertionsThemselves.assertions = []
+  end
+  
+  it "should succeed when no difference occurs on a local variable" do
+    count = 1
+    lambda {
+    }.should.not.differ('count')
+    assert_assert_equal_success
+  end
+  
+  it "should succeed when no difference occurs on an instance variable in the current scope" do
+    @count = 1
+    lambda {
+    }.should.not.differ('@count')
+    assert_assert_equal_success
+  end
+  
+  it "should succeed when no difference occurs on a class in the current scope" do
+    Pony.count = 1
+    lambda {
+    }.should.not.differ('Pony.count')
+    assert_assert_equal_success
+  end
+  
+  it "should fail when a difference occurs" do
+    Pony.count = 1
+    lambda {
+      Pony.count = 3
+    }.should.not.differ('Pony.count')
+    assert_assert_equal_failure('"Pony.count" changed by 2, expected no change')
+  end
+  
+  it "should return the return value of the block" do
+    Pony.count = 3
+    result = lambda {
+      Pony.count += 1
+    }.should.not.differ('Pony.count')
+    assert_equal 4, result, "differ didn't return the block result"
+  end
+  
+  it "should succeed when multiple expected differences do not occur" do
+    count = 1
+    Pony.count = 1
+    lambda {
+    }.should.not.differ('Pony.count', 'count')
+    
+    TestingAssertionsThemselves.assertions.each do |assertion, args|
+      assert_equal :assert_equal, assertion
+      assert_equal args[0], args[1]
+    end
+  end
+  
+  it "should fail when first of the expected differences does occur" do
+    count = 1
+    Pony.count = 1
+    lambda {
+      Pony.count += 2
+    }.should.not.differ('Pony.count', 'count')
+    
+    assertion, args = TestingAssertionsThemselves.assertions.first
+    assert_equal :assert_equal, assertion
+    assert_not_equal(args[0], args[1])
+    assert_equal '"Pony.count" changed by 2, expected no change', args[2]
+    
+    assertion, args = TestingAssertionsThemselves.assertions.second
+    assert_equal :assert_equal, assertion
+    assert_equal(args[0], args[1])
+  end
+  
+  it "should fail when second of the expected differences does occur" do
+    count = 1
+    Pony.count = 1
+    lambda {
+      count += 4
+    }.should.not.differ('Pony.count', 'count')
+    
+    assertion, args = TestingAssertionsThemselves.assertions.first
+    assert_equal :assert_equal, assertion
+    assert_equal(args[0], args[1])
+    
+    assertion, args = TestingAssertionsThemselves.assertions.second
+    assert_equal :assert_equal, assertion
+    assert_not_equal(args[0], args[1])
+    assert_equal '"count" changed by 4, expected no change', args[2]
+  end
+end
+
+
 describe "Record expectations" do
+  include AssertionAssertions
+  
+  before do
+    TestingAssertionsThemselves.assertions = []
+  end
+  
   it "should succeed when assertions are correct" do
     [].should.equal_records []
-    assertion_was_success
+    assert_assert_success
     
     [stub(:id => 1)].should.equal_records [stub(:id => 1)]
-    assertion_was_success
+    assert_assert_success
     
     [stub(:id => 1), stub(:id => 1)].should.equal_records [stub(:id => 1), stub(:id => 1)]
-    assertion_was_success
+    assert_assert_success
     
     [stub(:id => 1), stub(:id => 2)].should.equal_records [stub(:id => 1), stub(:id => 2)]
-    assertion_was_success
+    assert_assert_success
     
     [stub(:id => 2)].should.not.equal_records [stub(:id => 1)]
-    assertion_was_success
+    assert_assert_success
     
     [stub(:id => 1), stub(:id => 2)].should.not.equal_records [stub(:id => 1)]
-    assertion_was_success
+    assert_assert_success
     
     [stub(:id => 1)].should.not.equal_records [stub(:id => 1), stub(:id => 2)]
-    assertion_was_success
+    assert_assert_success
   end
   
   it "should fail when assertions are not corrent" do
     [].should.not.equal_records []
-    assertion_was_failure_with_message("[] has the same records as []")
+    assert_assert_failure("[] has the same records as []")
     
     [stub(:id => 1), stub(:id => 1)].should.equal_records [stub(:id => 1)]
-    assertion_was_failure_with_message("[Mocha::Mock[1], Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1]]")
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1]]")
     
     [stub(:id => 1), stub(:id => 2)].should.equal_records [stub(:id => 1), stub(:id => 1), stub(:id => 2)]
-    assertion_was_failure_with_message("[Mocha::Mock[1], Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[1], Mocha::Mock[2]]")
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[1], Mocha::Mock[2]]")
     
     [stub(:id => 1), stub(:id => 2), stub(:id => 1)].should.equal_records [stub(:id => 1), stub(:id => 2), stub(:id => 2)]
-    assertion_was_failure_with_message("[Mocha::Mock[1], Mocha::Mock[2], Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[2], Mocha::Mock[2]]")
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[2], Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[2], Mocha::Mock[2]]")
     
     [stub(:id => 1)].should.not.equal_records [stub(:id => 1)]
-    assertion_was_failure_with_message("[Mocha::Mock[1]] has the same records as [Mocha::Mock[1]]")
+    assert_assert_failure("[Mocha::Mock[1]] has the same records as [Mocha::Mock[1]]")
     
     [stub(:id => 1), stub(:id => 2)].should.not.equal_records [stub(:id => 1), stub(:id => 2)]
-    assertion_was_failure_with_message("[Mocha::Mock[1], Mocha::Mock[2]] has the same records as [Mocha::Mock[1], Mocha::Mock[2]]")
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[2]] has the same records as [Mocha::Mock[1], Mocha::Mock[2]]")
     
     [stub(:id => 2)].should.equal_records [stub(:id => 1)]
-    assertion_was_failure_with_message("[Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1]]")
+    assert_assert_failure("[Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1]]")
     
     [stub(:id => 1), stub(:id => 2)].should.equal_records [stub(:id => 1)]
-    assertion_was_failure_with_message("[Mocha::Mock[1], Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1]]")
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1]]")
     
     [stub(:id => 1)].should.equal_records [stub(:id => 1), stub(:id => 2)]
-    assertion_was_failure_with_message("[Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[2]]")
+    assert_assert_failure("[Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[2]]")
   end
-  
-  private
-  
-  def assertion_was_success
-    assertion = TestingAssertionsThemselves.last_assertion
-    assert assertion.first
-  end
-  
-  def assertion_was_failure_with_message(message)
-    assertion = TestingAssertionsThemselves.last_assertion
-    assert_equal message, assertion.last
-    assert !assertion.first
-  end 
 end

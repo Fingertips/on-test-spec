@@ -49,12 +49,22 @@ module Test
         #
         # lambda { Norm.create }.should.differ('Norm.count')
         # lambda { Norm.create; Norm.create }.should.differ('Norm.count', +2)
-        def differ(*args)
-          result = nil
-          assert_difference(*args) do
-            result = @object.call
+        # lambda { Norm.create; Option.create }.should.differ('Norm.count' => +2, 'Option.count' => +1)
+        def differ(*expected)
+          block_binding = @object.send(:binding)
+          before = expected.in_groups_of(2).map do |expression, _|
+            eval(expression, block_binding)
           end
-          result
+          
+          block_result = @object.call
+          
+          expected.in_groups_of(2).each_with_index do |(expression, difference), index|
+            difference = 1 if difference.nil?
+            error = "#{expression.inspect} didn't change by #{difference}"
+            assert_equal(before[index] + difference, eval(expression, block_binding), error)
+          end
+          
+          block_result
         end
         alias change differ
         
@@ -102,12 +112,23 @@ module Test
         # Tests that the evaluation of the expression shouldn't change
         #
         # lambda { Norm.new }.should.not.differ('Norm.count')
-        def differ(*args)
-          result = nil
-          assert_no_difference(*args) do
-            result = @object.call
+        # lambda { Norm.new }.should.not.differ('Norm.count', 'Option.count')
+        def differ(*expected)
+          block_binding = @object.send(:binding)
+          before = expected.map do |expression|
+            eval(expression, block_binding)
           end
-          result
+          
+          block_result = @object.call
+          
+          expected.each_with_index do |expression, index|
+            difference = eval(expression, block_binding) - before[index]
+            error = "#{expression.inspect} changed by #{difference}, expected no change"
+            assert_equal(0, difference, error)
+          end
+          
+          block_result
+          
         end
         alias change differ
         
