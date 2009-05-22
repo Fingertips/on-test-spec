@@ -4,7 +4,7 @@ require 'test/spec/rails/macros'
 describe "TestGenerator, concerning generation" do
   before do
     @test = mock('Test')
-    @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(@test)
+    @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(@test, :access_denied?, 'Expected access to be denied')
   end
   
   it "should generate a test description for a GET" do
@@ -32,8 +32,8 @@ end
 
 describe "TestGenerator, concerning test contents" do
   before do
-    @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(Immediate)
-    @generator.stubs(:access_denied?).returns(true)
+    @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(Immediate, :access_denied?, 'Expected access to be denied')
+    @generator.stubs(:send).with(:access_denied?).returns(true)
   end
   
   it "should send the verb and options to the controller" do
@@ -48,20 +48,33 @@ describe "TestGenerator, concerning test contents" do
     params = {:name => 'bitterzoet'}
     
     @generator.expects(:immediate_values).with(params).returns(params)
-    @generator.stubs(:send)
+    @generator.stubs(:send).returns(true)
     
     @generator.post(:create, params)
   end
 end
 
 describe "Macros::Authorization" do
+  before do
+    @test_case = mock('TestCase')
+    @proxy = Test::Spec::Rails::Macros::Should.new(@test_case)
+  end
+  
   it "should return a test generator when a new disallow rule is invoked" do
-    test_case = mock('TestCase')
-    proxy = Test::Spec::Rails::Macros::Should.new(test_case)
-    
-    generator = proxy.disallow
+    generator = @proxy.disallow
     
     generator.should.is_a(Test::Spec::Rails::Macros::Authorization::TestGenerator)
-    generator.test_case.should == test_case
+    generator.test_case.should == @test_case
+    generator.validation_method.should == :access_denied?
+    generator.message.should == 'Expected access to be denied'
+  end
+  
+  it "should return a test generator when a new login_required rule is invoked" do
+    generator = @proxy.require_login
+    
+    generator.should.is_a(Test::Spec::Rails::Macros::Authorization::TestGenerator)
+    generator.test_case.should == @test_case
+    generator.validation_method.should == :login_required?
+    generator.message.should == 'Expected login to be required'
   end
 end
