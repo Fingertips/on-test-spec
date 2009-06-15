@@ -40,6 +40,21 @@ module Test
         end
         alias :redirect_to :redirect
         
+        # Tests whether a redirect back to the HTTP_REFERER was send.
+        #
+        #   lambda { delete :destroy, :id => 1 }.should.redirect_back_to(articles_url)
+        #   lambda { delete :destroy, :id => 1 }.should.redirect_back_to(:action => :index)
+        def redirect_back_to(url_options)
+          test_case = eval("self", @object.binding)
+          url = test_case.controller.url_for(url_options)
+          test_case.controller.request.env["HTTP_REFERER"] = url
+          
+          block_result = @object.call
+          test_case.should.redirect_to(url)
+          
+          block_result
+        end
+        
         # Test that the object is valid
         def validate
           assert_valid @object

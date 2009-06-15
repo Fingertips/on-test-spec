@@ -7,7 +7,6 @@ require 'active_support/testing/assertions'
 
 require File.expand_path('../../lib/test/spec/rails/expectations', __FILE__)
 
-
 module TestingAssertionsThemselves
   class << self
     attr_accessor :assertions
@@ -336,5 +335,69 @@ describe "Record expectations" do
     
     [stub(:id => 1)].should.equal_records [stub(:id => 1), stub(:id => 2)]
     assert_assert_failure("[Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[2]]")
+  end
+end
+
+class TestController
+  def request
+    unless @request
+      @request ||= Object.new
+      def @request.env
+        @env ||= {}
+      end
+    end
+    @request
+  end
+end
+
+describe "Redirection expectations" do
+  include AssertionAssertions
+  
+  attr_reader :controller
+  
+  before do
+    TestingAssertionsThemselves.assertions = []
+    
+    @controller = TestController.new
+    @controller.stubs(:url_for).returns(@url)
+    
+    @matcher = stub('matcher')
+    self.stubs(:should).returns(@matcher)
+    @matcher.stubs(:redirect_to)
+    
+    @url = 'new_session_url'
+  end
+  
+  it "should set the request env HTTP_REFERER before executing the proc" do
+    @controller.expects(:url_for).with(@url).returns(@url)
+    lambda {}.should.redirect_back_to(@url)
+    assert_equal @url, controller.request.env['HTTP_REFERER']
+  end
+  
+  it "should call the `redirect_to' matcher with the url _after_ executing the proc" do
+    def @matcher.redirect_to(*args)
+      raise "Oh noes, should not be called yet!"
+    end
+    
+    lambda {
+      def @matcher.redirect_to(*args)
+        @called = true
+      end
+    }.should.redirect_back_to(@url)
+    
+    assert @matcher.instance_variable_get(:@called)
+  end
+  
+  it "should work with regular url options as well" do
+    @controller.expects(:url_for).with(:action => :new).returns(@url)
+    @matcher.expects(:redirect_to).with(@url)
+    
+    lambda {}.should.redirect_back_to(:action => :new)
+    assert_equal @url, controller.request.env['HTTP_REFERER']
+  end
+  
+  it "should return the result of calling the block" do
+    result = lambda { "called block" }.should.redirect_back_to(@url)
+    assert_equal "called block", result
   end
 end
