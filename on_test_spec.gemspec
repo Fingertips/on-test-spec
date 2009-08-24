@@ -17,7 +17,8 @@ Gem::Specification.new do |s|
      "README"
   ]
   s.files = [
-    "LICENSE",
+    ".gitignore",
+     "LICENSE",
      "README",
      "Rakefile",
      "VERSION",
@@ -33,6 +34,7 @@ Gem::Specification.new do |s|
      "lib/test/spec/rails/spec_responder.rb",
      "lib/test/spec/rails/test_spec_ext.rb",
      "lib/test/spec/share.rb",
+     "on_test_spec.gemspec",
      "test/add_allow_switch_test.rb",
      "test/expectations_test.rb",
      "test/macros/authorization_test.rb",
