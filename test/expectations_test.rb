@@ -306,6 +306,10 @@ describe "Record expectations" do
     
     [stub(:id => 1)].should.not.equal_set [stub(:id => 1), stub(:id => 2)]
     assert_assert_success
+
+    # equal_set ignores order
+    [stub(:id => 1), stub(:id => 2)].should.equal_set [stub(:id => 2), stub(:id => 1)]
+    assert_assert_success
   end
   
   it "should fail when equal_set assertions are not correct" do
@@ -335,6 +339,66 @@ describe "Record expectations" do
     
     [stub(:id => 1)].should.equal_set [stub(:id => 1), stub(:id => 2)]
     assert_assert_failure("[Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[2]]")
+  end
+
+  it "should succeed when equal_list assertions are correct" do
+    [].should.equal_list []
+    assert_assert_success
+    
+    [stub(:id => 1)].should.equal_list [stub(:id => 1)]
+    assert_assert_success
+    
+    [stub(:id => 1), stub(:id => 1)].should.equal_list [stub(:id => 1), stub(:id => 1)]
+    assert_assert_success
+    
+    [stub(:id => 1), stub(:id => 2)].should.equal_list [stub(:id => 1), stub(:id => 2)]
+    assert_assert_success
+    
+    [stub(:id => 2)].should.not.equal_list [stub(:id => 1)]
+    assert_assert_success
+    
+    [stub(:id => 1), stub(:id => 2)].should.not.equal_list [stub(:id => 1)]
+    assert_assert_success
+    
+    [stub(:id => 1)].should.not.equal_list [stub(:id => 1), stub(:id => 2)]
+    assert_assert_success
+
+    # equal_list does not ignore order
+    [stub(:id => 1), stub(:id => 2)].should.not.equal_list [stub(:id => 2), stub(:id => 1)]
+    assert_assert_success
+  end
+  
+  it "should fail when equal_list assertions are not correct" do
+    [].should.not.equal_list []
+    assert_assert_failure("[] has the same records as []")
+    
+    [stub(:id => 1), stub(:id => 1)].should.equal_list [stub(:id => 1)]
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1]]")
+    
+    [stub(:id => 1), stub(:id => 2)].should.equal_list [stub(:id => 1), stub(:id => 1), stub(:id => 2)]
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[1], Mocha::Mock[2]]")
+    
+    [stub(:id => 1), stub(:id => 2), stub(:id => 1)].should.equal_list [stub(:id => 1), stub(:id => 2), stub(:id => 2)]
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[2], Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[2], Mocha::Mock[2]]")
+    
+    [stub(:id => 1)].should.not.equal_list [stub(:id => 1)]
+    assert_assert_failure("[Mocha::Mock[1]] has the same records as [Mocha::Mock[1]]")
+    
+    [stub(:id => 1), stub(:id => 2)].should.not.equal_list [stub(:id => 1), stub(:id => 2)]
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[2]] has the same records as [Mocha::Mock[1], Mocha::Mock[2]]")
+    
+    [stub(:id => 2)].should.equal_list [stub(:id => 1)]
+    assert_assert_failure("[Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1]]")
+    
+    [stub(:id => 1), stub(:id => 2)].should.equal_list [stub(:id => 1)]
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[2]] does not have the same records as [Mocha::Mock[1]]")
+    
+    [stub(:id => 1)].should.equal_list [stub(:id => 1), stub(:id => 2)]
+    assert_assert_failure("[Mocha::Mock[1]] does not have the same records as [Mocha::Mock[1], Mocha::Mock[2]]")
+    
+    # equal_list does not ignore order
+    [stub(:id => 1), stub(:id => 2)].should.equal_list [stub(:id => 2), stub(:id => 1)]
+    assert_assert_failure("[Mocha::Mock[1], Mocha::Mock[2]] does not have the same records as [Mocha::Mock[2], Mocha::Mock[1]]")
   end
 end
 

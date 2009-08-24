@@ -117,6 +117,16 @@ module Test
           
           assert(left == right, message)
         end
+        
+        # Tests if the array of records is the same, order must be the same
+        def equal_list(expected)
+          message = "#{Helpers.inspect_records(@object)} does not have the same records as #{Helpers.inspect_records(expected)}"
+          
+          left = @object.map(&:id)
+          right = expected.map(&:id)
+          
+          assert(left == right, message)
+        end
       end
       
       module ShouldNotExpectations
@@ -164,6 +174,16 @@ module Test
           
           left = @object.map(&:id).sort
           right = expected.map(&:id).sort
+          
+          assert(left != right, message)
+        end
+        
+        # Tests if the array of records is not the same, order may vary
+        def equal_list(expected)
+          message = "#{Helpers.inspect_records(@object)} has the same records as #{Helpers.inspect_records(expected)}"
+          
+          left = @object.map(&:id)
+          right = expected.map(&:id)
           
           assert(left != right, message)
         end
