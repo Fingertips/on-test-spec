@@ -12,8 +12,8 @@ end
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
-    s.name     = "on_test_spec"
-    s.homepage = "http://github.com/Fingertips/on_test_spec"
+    s.name     = "on-test-spec"
+    s.homepage = "http://github.com/Fingertips/on-test-spec"
     s.email    = "eloy.de.enige@gmail.com"
     s.authors  = ["Manfred Stienstra", "Eloy Duran", "Cristi Balan"]
     s.summary  = s.description = "Rails plugin to make testing Rails on test/spec easier."

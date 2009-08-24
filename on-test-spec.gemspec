@@ -4,7 +4,7 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{on_test_spec}
+  s.name = %q{on-test-spec}
   s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
      "lib/test/spec/rails/spec_responder.rb",
      "lib/test/spec/rails/test_spec_ext.rb",
      "lib/test/spec/share.rb",
-     "on_test_spec.gemspec",
+     "on-test-spec.gemspec",
      "test/add_allow_switch_test.rb",
      "test/expectations_test.rb",
      "test/macros/authorization_test.rb",
@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
      "test/test_helper.rb"
   ]
   s.has_rdoc = true
-  s.homepage = %q{http://github.com/Fingertips/on_test_spec}
+  s.homepage = %q{http://github.com/Fingertips/on-test-spec}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.2}
