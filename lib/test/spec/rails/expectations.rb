@@ -109,7 +109,7 @@ module Test
         end
         
         # Tests if the array of records is the same, order may vary
-        def equal_records(expected)
+        def equal_set(expected)
           message = "#{Helpers.inspect_records(@object)} does not have the same records as #{Helpers.inspect_records(expected)}"
           
           left = @object.map(&:id).sort
@@ -159,7 +159,7 @@ module Test
         end
         
         # Tests if the array of records is not the same, order may vary
-        def equal_records(expected)
+        def equal_set(expected)
           message = "#{Helpers.inspect_records(@object)} has the same records as #{Helpers.inspect_records(expected)}"
           
           left = @object.map(&:id).sort
