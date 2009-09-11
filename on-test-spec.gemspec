@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{on-test-spec}
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Manfred Stienstra", "Eloy Duran", "Cristi Balan"]
-  s.date = %q{2009-08-24}
+  s.date = %q{2009-09-11}
   s.description = %q{Rails plugin to make testing Rails on test/spec easier.}
   s.email = %q{eloy.de.enige@gmail.com}
   s.extra_rdoc_files = [
@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
      "LICENSE",
      "README",
      "Rakefile",
-     "VERSION",
+     "VERSION.yml",
      "dot.autotest",
      "lib/test/spec/add_allow_switch.rb",
      "lib/test/spec/rails.rb",
@@ -39,20 +39,21 @@ Gem::Specification.new do |s|
      "test/expectations_test.rb",
      "test/macros/authorization_test.rb",
      "test/macros/base_test.rb",
+     "test/rails_test.rb",
      "test/share_test.rb",
      "test/test_helper.rb"
   ]
-  s.has_rdoc = true
   s.homepage = %q{http://github.com/Fingertips/on-test-spec}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.2}
+  s.rubygems_version = %q{1.3.5}
   s.summary = %q{Rails plugin to make testing Rails on test/spec easier.}
   s.test_files = [
     "test/add_allow_switch_test.rb",
      "test/expectations_test.rb",
      "test/macros/authorization_test.rb",
      "test/macros/base_test.rb",
+     "test/rails_test.rb",
      "test/share_test.rb",
      "test/test_helper.rb"
   ]
