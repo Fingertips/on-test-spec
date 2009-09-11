@@ -1,11 +1,5 @@
-require 'rubygems' rescue LoadError
-require 'test/spec'
-require 'mocha'
-
-require 'active_support'
-require 'active_support/testing/assertions'
-
-require File.expand_path('../../lib/test/spec/rails/expectations', __FILE__)
+require File.expand_path('../test_helper', __FILE__)
+require 'test/spec/rails'
 
 module TestingAssertionsThemselves
   class << self

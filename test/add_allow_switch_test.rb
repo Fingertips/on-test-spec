@@ -1,9 +1,5 @@
-require 'rubygems' rescue LoadError
-
-require 'test/spec'
-require 'mocha'
-
-require File.expand_path('../../lib/test/spec/add_allow_switch', __FILE__)
+require File.expand_path('../test_helper', __FILE__)
+require 'test/spec/add_allow_switch'
 
 module Factory
   def self.run

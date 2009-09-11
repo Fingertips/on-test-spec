@@ -1,7 +1,5 @@
-require 'rubygems' rescue LoadError
-require 'test/spec'
-
-require File.expand_path('../../lib/test/spec/share', __FILE__)
+require File.expand_path('../test_helper', __FILE__)
+require 'test/spec/share'
 
 class DummyMock
   extend SharedSpecsInclusionHelper
