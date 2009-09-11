@@ -1,11 +1,13 @@
 require File.expand_path("../test_helper", __FILE__)
 require "test/spec/rails"
 
+class RegularClass; end
 class ActiveRecordModel < ActiveRecord::Base; end
 class ActionControllerClass < ActionController::Base; end
 module ViewModuleHelper; end
 
 CLASS_TO_TESTCASE_MAPPINGS = {
+  RegularClass          => ActiveSupport::TestCase,
   ActiveRecordModel     => ActiveRecord::TestCase,
   ActionControllerClass => ActionController::TestCase,
   ViewModuleHelper      => ActionView::TestCase
