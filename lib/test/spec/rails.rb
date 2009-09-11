@@ -30,7 +30,7 @@ module Test
             ActiveRecord::TestCase
           elsif klass.ancestors.include?(ActionController::Base)
             ActionController::TestCase
-          elsif klass.to_s.ends_with?('Helper')
+          elsif !klass.is_a?(Class) && klass.to_s.ends_with?('Helper')
             ActionView::TestCase
           end
         end || ActiveSupport::TestCase
