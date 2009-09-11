@@ -43,6 +43,33 @@ module Kernel
   alias :context_before_on_test_spec :context
   alias :xcontext_before_on_test_spec :xcontext
   
+  # Creates a new test case.
+  #
+  # The description of the test case, can consist from strings and/or the class
+  # that's to be tested.
+  #
+  # If the class inherits from ActiveRecord::Base, ActiveRecord::TestCase will
+  # be used as the test case superclass. In the case of a class which inherits
+  # from ActionController::Base, ActionController::TestCase will be used. And
+  # when given a module which name ends with “Helper”, ActionView::TestCase
+  # will be used. In the latter two cases, the test case will be setup for the
+  # class that's to be tested.
+  #
+  # In all other cases the test case superclass will be ActiveSupport::TestCase.
+  #
+  # Examples:
+  #
+  #   describe Member do # "Member"
+  #     ...
+  #   end
+  #
+  #   describe 'On a', MembersController do # "On a MembersController"
+  #     ...
+  #   end
+  #
+  #   describe 'The', MembersHelper, ', concerning dates' do # "The MembersHelper, concerning dates"
+  #     ...
+  #   end
   def context(*args, &block)
     name, class_to_test, superclass = Test::Spec::Rails.extract_test_case_args(args)
     spec = context_before_on_test_spec(name, superclass) { tests class_to_test if respond_to?(:tests) }
