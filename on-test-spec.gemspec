@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{on-test-spec}
-  s.version = "0.1.3"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Manfred Stienstra", "Eloy Duran", "Cristi Balan"]
@@ -25,7 +25,6 @@ Gem::Specification.new do |s|
      "dot.autotest",
      "lib/test/spec/add_allow_switch.rb",
      "lib/test/spec/rails.rb",
-     "lib/test/spec/rails/controller_helpers.rb",
      "lib/test/spec/rails/expectations.rb",
      "lib/test/spec/rails/macros.rb",
      "lib/test/spec/rails/macros/authorization.rb",
@@ -36,6 +35,7 @@ Gem::Specification.new do |s|
      "lib/test/spec/share.rb",
      "on-test-spec.gemspec",
      "test/add_allow_switch_test.rb",
+     "test/controller_helpers_test.rb",
      "test/expectations_test.rb",
      "test/macros/authorization_test.rb",
      "test/macros/base_test.rb",
@@ -50,6 +50,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Rails plugin to make testing Rails on test/spec easier.}
   s.test_files = [
     "test/add_allow_switch_test.rb",
+     "test/controller_helpers_test.rb",
      "test/expectations_test.rb",
      "test/macros/authorization_test.rb",
      "test/macros/base_test.rb",
