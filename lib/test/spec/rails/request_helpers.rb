@@ -8,4 +8,4 @@ module Test
   end
 end
 
-ActiveSupport::TestCase.send(:include, Test::Spec::Rails::RequestHelpers)
+ActionController::TestCase.send(:include, Test::Spec::Rails::RequestHelpers)

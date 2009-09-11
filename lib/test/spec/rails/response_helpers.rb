@@ -39,4 +39,4 @@ module Test
   end
 end
 
-ActiveSupport::TestCase.send(:include, Test::Spec::Rails::ResponseHelpers)
+ActionController::TestCase.send(:include, Test::Spec::Rails::ResponseHelpers)
