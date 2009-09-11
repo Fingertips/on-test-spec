@@ -1,6 +1,16 @@
 require File.expand_path("../test_helper", __FILE__)
 require "test/spec/rails"
 
+class ActiveRecordModel < ActiveRecord::Base; end
+class ActionControllerClass < ActionController::Base; end
+module ViewModuleHelper; end
+
+CLASS_TO_TESTCASE_MAPPINGS = {
+  ActiveRecordModel     => ActiveRecord::TestCase,
+  ActionControllerClass => ActionController::TestCase,
+  ViewModuleHelper      => ActionView::TestCase
+}
+
 describe "A test case with a traditional, string only, description" do
   test_case = self
   
@@ -14,16 +24,25 @@ describe "A test case with a traditional, string only, description" do
   end
 end
 
-class ActiveRecordModel < ActiveRecord::Base; end
-class ActionControllerClass < ActionController::Base; end
-module ViewModuleHelper; end
+describe "A test case for an", ActionControllerClass do
+  test_case = self
+  
+  it "should have the class assigned as the class to test" do
+    test_case.controller_class.should.be ActionControllerClass
+    @controller.should.be.instance_of ActionControllerClass
+  end
+end
 
-{
-  ActiveRecordModel     => ActiveRecord::TestCase,
-  ActionControllerClass => ActionController::TestCase,
-  ViewModuleHelper      => ActionView::TestCase
+describe "A test case for a", ViewModuleHelper do
+  test_case = self
+  
+  it "should have the module assigned as the module to test" do
+    test_case.helper_class.should.be ViewModuleHelper
+    test_case.ancestors.should.include ViewModuleHelper
+  end
+end
 
-}.each do |test_class, expected_test_case|
+CLASS_TO_TESTCASE_MAPPINGS.each do |test_class, expected_test_case|
 
   describe test_class do
     test_case = self

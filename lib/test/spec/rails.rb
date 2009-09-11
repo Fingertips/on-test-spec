@@ -43,7 +43,9 @@ module Kernel
     
     klass=Test::Spec::TestCase
     
-    context_before_on_test_spec(name, superclass, klass, &block)
+    spec = context_before_on_test_spec(name, superclass, klass) { self.tests(tests) if respond_to?(:tests) }
+    spec.testcase.class_eval(&block)
+    spec
   end
   
   def xcontext(name, superclass=ActiveSupport::TestCase, &block)
