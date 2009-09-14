@@ -4,7 +4,7 @@ require 'test/spec/rails/macros'
 describe "TestGenerator, concerning generation" do
   before do
     @test = mock('Test')
-    @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(@test, :access_denied?, 'Expected access to be denied')
+    @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(@test, :access_denied?, true, 'Expected access to be denied')
   end
   
   it "should generate a test description for a GET" do
@@ -32,7 +32,7 @@ end
 
 describe "TestGenerator, concerning test contents" do
   before do
-    @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(Immediate, :access_denied?, 'Expected access to be denied')
+    @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(Immediate, :access_denied?, true, 'Expected access to be denied')
     @generator.stubs(:send).with(:access_denied?).returns(true)
   end
   
@@ -52,6 +52,16 @@ describe "TestGenerator, concerning test contents" do
     
     @generator.post(:create, params)
   end
+  
+  it "should test the return value of the validation method against the expected method" do
+    @generator.expected = false
+    params = {:name => 'bitterzoet'}
+    
+    @generator.expects(:immediate_values).with(params).returns(params)
+    @generator.stubs(:send).returns(false)
+    
+    @generator.post(:create, params)
+  end
 end
 
 describe "Macros::Authorization" do
@@ -67,6 +77,17 @@ describe "Macros::Authorization" do
     generator.test_case.should == @test_case
     generator.validation_method.should == :access_denied?
     generator.message.should == 'Expected access to be denied'
+    generator.expected.should == true
+  end
+  
+  it "should return a test generator when a new allow rule is invoked" do
+    generator = @proxy.allow
+    
+    generator.should.is_a(Test::Spec::Rails::Macros::Authorization::TestGenerator)
+    generator.test_case.should == @test_case
+    generator.validation_method.should == :access_denied?
+    generator.message.should == 'Expected access to be denied'
+    generator.expected.should == false
   end
   
   it "should return a test generator when a new login_required rule is invoked" do
@@ -76,5 +97,6 @@ describe "Macros::Authorization" do
     generator.test_case.should == @test_case
     generator.validation_method.should == :login_required?
     generator.message.should == 'Expected login to be required'
+    generator.expected.should == true
   end
 end
