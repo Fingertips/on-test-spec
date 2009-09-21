@@ -17,12 +17,10 @@ Gem::Specification.new do |s|
      "README"
   ]
   s.files = [
-    ".gitignore",
      "LICENSE",
      "README",
      "Rakefile",
      "VERSION.yml",
-     "dot.autotest",
      "lib/test/spec/add_allow_switch.rb",
      "lib/test/spec/rails.rb",
      "lib/test/spec/rails/controller_helpers.rb",
@@ -34,7 +32,6 @@ Gem::Specification.new do |s|
      "lib/test/spec/rails/spec_responder.rb",
      "lib/test/spec/rails/test_spec_ext.rb",
      "lib/test/spec/share.rb",
-     "on-test-spec.gemspec",
      "test/add_allow_switch_test.rb",
      "test/controller_helpers_test.rb",
      "test/expectations_test.rb",
