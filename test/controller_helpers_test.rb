@@ -1,10 +1,15 @@
 require File.expand_path('../test_helper', __FILE__)
 require 'test/spec/rails/request_helpers'
 require 'test/spec/rails/response_helpers'
+require 'test/spec/rails/controller_helpers'
 
 class ActionControllerClass < ActionController::Base; end
 
 describe ActionControllerClass, "response helpers for a controller test" do
+  it "should map #controller to the controller instance" do
+    controller.should == @controller
+  end
+  
   it "should map #status to the response status" do
     expects(:assert_response).with(:success, 'the message')
     status.should.be :success, 'the message'

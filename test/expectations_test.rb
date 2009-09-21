@@ -70,6 +70,7 @@ end
 
 describe "Differ expectations" do
   include AssertionAssertions
+  attr_accessor :controller
   
   before do
     TestingAssertionsThemselves.assertions = []
@@ -182,6 +183,7 @@ end
 
 describe "NotDiffer expectations" do
   include AssertionAssertions
+  attr_accessor :controller
   
   before do
     TestingAssertionsThemselves.assertions = []
@@ -274,6 +276,7 @@ end
 
 describe "Record expectations" do
   include AssertionAssertions
+  attr_accessor :controller
   
   before do
     TestingAssertionsThemselves.assertions = []
@@ -410,8 +413,7 @@ end
 
 describe "Redirection expectations" do
   include AssertionAssertions
-  
-  attr_reader :controller
+  attr_accessor :controller
   
   before do
     TestingAssertionsThemselves.assertions = []
