@@ -86,7 +86,7 @@ describe "Macros::Authorization" do
     generator.should.is_a(Test::Spec::Rails::Macros::Authorization::TestGenerator)
     generator.test_case.should == @test_case
     generator.validation_method.should == :access_denied?
-    generator.message.should == 'Expected access to be denied'
+    generator.message.should == 'Expected access to be allowed'
     generator.expected.should == false
   end
   

@@ -3,29 +3,25 @@ require 'test/spec/rails'
 
 module TestingAssertionsThemselves
   class << self
+    def setup
+      $TEST_SPEC_TESTCASE = TestingAssertionsThemselves
+      TestingAssertionsThemselves.assertions = []
+    end
+    
     attr_accessor :assertions
+    
+    def assert(*args)
+      TestingAssertionsThemselves.assertions << [:assert, args]
+    end
+    
+    def assert_equal(*args)
+      TestingAssertionsThemselves.assertions << [:assert_equal, args]
+    end
+    
+    def last_assertion
+      TestingAssertionsThemselves.assertions.last
+    end
   end
-  @assertions = []
-  
-  def assert(*args)
-    TestingAssertionsThemselves.assertions << [:assert, args]
-  end
-  
-  def assert_equal(*args)
-    TestingAssertionsThemselves.assertions << [:assert_equal, args]
-  end
-  
-  def self.last_assertion
-    TestingAssertionsThemselves.assertions.last
-  end
-end
-
-class Test::Spec::Should
-  include TestingAssertionsThemselves
-end
-
-class Test::Spec::ShouldNot
-  include TestingAssertionsThemselves
 end
 
 module AssertionAssertions
@@ -73,7 +69,7 @@ describe "Differ expectations" do
   attr_accessor :controller
   
   before do
-    TestingAssertionsThemselves.assertions = []
+    TestingAssertionsThemselves.setup
   end
   
   it "should succeed when the expected difference occurs on a local variable" do
@@ -186,7 +182,7 @@ describe "NotDiffer expectations" do
   attr_accessor :controller
   
   before do
-    TestingAssertionsThemselves.assertions = []
+    TestingAssertionsThemselves.setup
   end
   
   it "should succeed when no difference occurs on a local variable" do
@@ -279,7 +275,7 @@ describe "Record expectations" do
   attr_accessor :controller
   
   before do
-    TestingAssertionsThemselves.assertions = []
+    TestingAssertionsThemselves.setup
   end
   
   it "should succeed when equal_set assertions are correct" do
@@ -416,7 +412,7 @@ describe "Redirection expectations" do
   attr_accessor :controller
   
   before do
-    TestingAssertionsThemselves.assertions = []
+    TestingAssertionsThemselves.setup
     
     @controller = TestController.new
     @controller.stubs(:url_for).returns(@url)

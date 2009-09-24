@@ -8,8 +8,6 @@ module Test
       end
       
       module ShouldExpectations
-        include ActiveSupport::Testing::Assertions
-        
         # Test that we were redirected somewhere:
         #   should.redirect
         #
@@ -19,9 +17,9 @@ module Test
         #   should.redirect_to :controller => 'foo', :action => 'bar', :secure => true
         def redirect(*args)
           if args.empty?
-            assert_response @object.response.redirected_to, :redirect
+            test_case.assert_response @object.response.redirected_to, :redirect
           elsif args.length == 1 and args.first.is_a?(String)
-            assert_equal args.first, @object.response.redirected_to
+            test_case.assert_equal args.first, @object.response.redirected_to
           else
             options = args.extract_options!
             if secure = options.delete(:secure)
@@ -30,11 +28,11 @@ module Test
               end
             end
             
-            @object.instance_eval { assert_redirected_to *args }
+            @object.instance_eval { test_case.assert_redirected_to *args }
             if secure == true
-              assert @object.response.redirected_to.starts_with?('https:')
+              test_case.assert @object.response.redirected_to.starts_with?('https:')
             elsif secure == false
-              assert @object.response.redirected_to.starts_with?('http:')
+              test_case.assert @object.response.redirected_to.starts_with?('http:')
             end
           end
         end
@@ -57,7 +55,7 @@ module Test
         
         # Test that the object is valid
         def validate
-          assert_valid @object
+          test_case.assert_valid @object
         end
         
         # Tests whether the evaluation of the expression changes.
@@ -79,7 +77,7 @@ module Test
           expected.in_groups_of(2).each_with_index do |(expression, difference), index|
             difference = 1 if difference.nil?
             error = "#{expression.inspect} didn't change by #{difference}"
-            assert_equal(before[index] + difference, eval(expression, block_binding), error)
+            test_case.assert_equal(before[index] + difference, eval(expression, block_binding), error)
           end
           
           block_result
@@ -100,12 +98,12 @@ module Test
           files = Dir.glob("#{cache_dir}/**/*").map do |filename|
             filename[cache_dir.length..-1]
           end
-          assert pages.all? { |page| files.include?(page) }
+          test_case.assert pages.all? { |page| files.include?(page) }
         end
         
         # Test two HTML strings for equivalency (e.g., identical up to reordering of attributes)
         def dom_equal(expected)
-          assert_dom_equal expected, @object
+          test_case.assert_dom_equal expected, @object
         end
         
         # Tests if the array of records is the same, order may vary
@@ -115,7 +113,7 @@ module Test
           left = @object.map(&:id).sort
           right = expected.map(&:id).sort
           
-          assert(left == right, message)
+          test_case.assert(left == right, message)
         end
         
         # Tests if the array of records is the same, order must be the same
@@ -125,16 +123,14 @@ module Test
           left = @object.map(&:id)
           right = expected.map(&:id)
           
-          assert(left == right, message)
+          test_case.assert(left == right, message)
         end
       end
       
       module ShouldNotExpectations
-        include ActiveSupport::Testing::Assertions
-        
         # Test that an object is not valid
         def validate
-          assert !@object.valid?
+          test_case.assert !@object.valid?
         end
         
         # Tests that the evaluation of the expression shouldn't change
@@ -155,7 +151,7 @@ module Test
           expected.each_with_index do |expression, index|
             difference = eval(expression, block_binding) - before[index]
             error = "#{expression.inspect} changed by #{difference}, expected no change"
-            assert_equal(0, difference, error)
+            test_case.assert_equal(0, difference, error)
           end
           
           block_result
@@ -165,7 +161,7 @@ module Test
         
         # Test that two HTML strings are not equivalent
         def dom_equal(expected)
-          assert_dom_not_equal expected, @object
+          test_case.assert_dom_not_equal expected, @object
         end
         
         # Tests if the array of records is not the same, order may vary
@@ -175,7 +171,7 @@ module Test
           left = @object.map(&:id).sort
           right = expected.map(&:id).sort
           
-          assert(left != right, message)
+          test_case.assert(left != right, message)
         end
         
         # Tests if the array of records is not the same, order may vary
@@ -185,7 +181,7 @@ module Test
           left = @object.map(&:id)
           right = expected.map(&:id)
           
-          assert(left != right, message)
+          test_case.assert(left != right, message)
         end
       end
     end
