@@ -75,4 +75,5 @@ end
 Test::Spec::TestCase::ClassMethods.send(:include,    Test::Spec::Rails::Macros::ClassMethods)
 Test::Spec::TestCase::InstanceMethods.send(:include, Test::Spec::Rails::Macros::InstanceMethods)
 
+require 'test/spec/rails/macros/response'
 require 'test/spec/rails/macros/authorization'

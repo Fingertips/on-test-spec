@@ -1,7 +1,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 require 'test/spec/rails/macros'
 
-describe "TestGenerator, concerning generation" do
+describe "Authorization::TestGenerator, concerning generation" do
   before do
     @test = mock('Test')
     @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(@test, :access_denied?, true, 'Expected access to be denied')
@@ -30,7 +30,7 @@ class Immediate
   end
 end
 
-describe "TestGenerator, concerning test contents" do
+describe "Authorization::TestGenerator, concerning test contents" do
   before do
     @generator = Test::Spec::Rails::Macros::Authorization::TestGenerator.new(Immediate, :access_denied?, true, 'Expected access to be denied')
     @generator.stubs(:send).with(:access_denied?).returns(true)
