@@ -4,6 +4,7 @@ require "test/spec/rails"
 class RegularClass; end
 class ActiveRecordModel < ActiveRecord::Base; end
 class ActionControllerClass < ActionController::Base; end
+class ActiveSupportTestCaseClass < ActiveSupport::TestCase; end
 module ViewModuleHelper; end
 
 CLASS_TO_TESTCASE_MAPPINGS = {
@@ -32,6 +33,20 @@ describe "A test case for an", ActionControllerClass do
   it "should have the class assigned as the class to test" do
     test_case.controller_class.should.be ActionControllerClass
     @controller.should.be.instance_of ActionControllerClass
+  end
+end
+
+describe "A test case for an ActiveSupport::TestCase descendant", ActiveSupportTestCaseClass do
+  test_case = self
+
+  it "should have itself assigned as the class to test and as the superclass" do
+    test_case.ancestors.should.include ActiveSupportTestCaseClass
+    test_case.superclass.should.be ActiveSupportTestCaseClass
+  end
+
+  it "should not include itself in the description" do
+    test_case.name.should ==
+      "A test case for an ActiveSupport::TestCase descendant"
   end
 end
 

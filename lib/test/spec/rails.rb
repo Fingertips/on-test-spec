@@ -18,9 +18,12 @@ module Test
   module Spec
     module Rails
       def self.extract_test_case_args(args)
-        name          = args.map { |a| a.to_s }.join(' ')
         class_to_test = args.find { |a| a.is_a?(Module) }
         superclass    = test_case_for_class(class_to_test)
+
+        args.delete(class_to_test) if superclass == class_to_test
+        name          = args.map { |a| a.to_s }.join(' ')
+
         [name, class_to_test, superclass]
       end
       
@@ -30,6 +33,8 @@ module Test
             ActiveRecord::TestCase
           elsif klass.ancestors.include?(ActionController::Base)
             ActionController::TestCase
+          elsif klass.ancestors.include?(ActiveSupport::TestCase)
+            klass
           elsif !klass.is_a?(Class) && klass.to_s.ends_with?('Helper')
             ActionView::TestCase
           end
@@ -55,6 +60,10 @@ module Kernel
   # will be used. In the latter two cases, the test case will be setup for the
   # class that's to be tested.
   #
+  # If the class inherits from ActiveSupport::TestCase, it will be used as both
+  # the class to be tested and as the test case superclass (this is how test-spec
+  # works without on-test-spec).
+  #
   # In all other cases the test case superclass will be ActiveSupport::TestCase.
   #
   # Examples:
@@ -68,6 +77,10 @@ module Kernel
   #   end
   #
   #   describe 'The', MembersHelper, ', concerning dates' do # "The MembersHelper, concerning dates"
+  #     ...
+  #   end
+  #
+  #   describe 'Creating an account and posting a comment', ActiveSupport::IntegrationTest do # Creating an account and posting a comment ActionController::IntegrationTest
   #     ...
   #   end
   def context(*args, &block)
