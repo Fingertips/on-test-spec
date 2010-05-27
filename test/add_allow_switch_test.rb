@@ -5,8 +5,13 @@ module Factory
   def self.run
     true
   end
+  
+  def self.ran(name, &block)
+    block.call("#{name} was run")
+  end
 end
 Factory.add_allow_switch :run, :default => true
+Factory.add_allow_switch :ran
 
 describe "Factory with an allow switch on run" do
   it "should alias the original method" do
@@ -31,13 +36,25 @@ describe "Factory with an allow switch on run" do
       Factory.run.should == true
     }.should.not.raise
   end
+  
+  it "should forward passed blocks and arguments" do
+    Factory.allow_ran = true
+    Factory.ran('Machine') do |name|
+      name + '!'
+    end.should == 'Machine was run!'
+  end
 end
 
 class Bunny
+  def hip(name, &block)
+    block.call("#{name} is hip")
+  end
+  
   def hop
     'Hop hop!'
   end
 end
+Bunny.add_allow_switch :hip
 Bunny.add_allow_switch :hop
 
 describe "Bunny with an allow switch on hop" do
@@ -67,8 +84,14 @@ describe "Bunny with an allow switch on hop" do
       @bunny.hop.should == 'Hop hop!'
     }.should.not.raise
   end
+  
+  it "should forward passed blocks and arguments" do
+    Bunny.allow_hip = true
+    @bunny.hip('Bunny') do |name|
+      name + '!'
+    end.should == 'Bunny is hip!'
+  end
 end
-
 
 Kernel.add_allow_switch :system
 

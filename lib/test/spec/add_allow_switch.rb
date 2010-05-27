@@ -11,9 +11,9 @@ class Class
       alias_method "original_#{method}", method
       
       eval %{
-        def #{method}(*args)
+        def #{method}(*args, &block)
           if allow_#{method}
-            original_#{method}(*args)
+            original_#{method}(*args, &block)
           else
             raise RuntimeError, "You're trying to call `#{method}' on `#{self}', which you probably don't want in a test."
           end
@@ -40,9 +40,9 @@ class Module
       alias_method "original_#{method}", method
       
       eval %{
-        def #{method}(*args)
+        def #{method}(*args, &block)
           if allow_#{method}
-            original_#{method}(*args)
+            original_#{method}(*args, &block)
           else
             raise RuntimeError, "You're trying to call `#{method}' on `#{self}', which you probably don't want in a test."
           end
