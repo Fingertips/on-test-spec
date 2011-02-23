@@ -16,10 +16,11 @@ module Test
         # or:
         #   should.redirect_to :controller => 'foo', :action => 'bar', :secure => true
         def redirect(*args)
+          redirect_url = @object.response.respond_to?(:redirect_url) ? @object.response.redirect_url : @object.response.redirected_to
           if args.empty?
-            test_case.assert_response @object.response.redirected_to, :redirect
+            test_case.assert_response redirect_url, :redirect
           elsif args.length == 1 and args.first.is_a?(String)
-            test_case.assert_equal args.first, @object.response.redirected_to
+            test_case.assert_equal args.first, redirect_url
           else
             options = args.extract_options!
             if secure = options.delete(:secure)
@@ -30,9 +31,9 @@ module Test
             
             @object.instance_eval { test_case.assert_redirected_to *args }
             if secure == true
-              test_case.assert @object.response.redirected_to.starts_with?('https:')
+              test_case.assert redirect_url.starts_with?('https:')
             elsif secure == false
-              test_case.assert @object.response.redirected_to.starts_with?('http:')
+              test_case.assert redirect_url.starts_with?('http:')
             end
           end
         end
