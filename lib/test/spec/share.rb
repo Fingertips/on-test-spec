@@ -45,4 +45,5 @@ module SharedSpecsInclusionHelper
     self.class_eval &$shared_specs[name]
   end
 end
+
 Test::Unit::TestCase.send(:extend, SharedSpecsInclusionHelper)
