@@ -124,6 +124,18 @@ module Test::Spec::Rails
       
       test_case.assert(left == right, message)
     end
+    
+    # Tests if the model has errors on the attribute after validation for the presented value
+    def validate_with(attribute, value)
+      message = "Expected #{attribute.inspect} with value `#{value.inspect}' to validate"
+      @object.send("#{attribute}=", value)
+      @object.valid?
+      if @object.errors[attribute].kind_of?(Array)
+        test_case.assert(@object.errors[attribute].empty?, message)
+      else
+        test_case.assert(@object.errors.on(attribute).nil?, message)
+      end
+    end
   end
   
   module ShouldNotExpectations
@@ -181,6 +193,18 @@ module Test::Spec::Rails
       right = expected.map(&:id)
       
       test_case.assert(left != right, message)
+    end
+    
+    # Tests if the model has errors on the attribute after validation for the presented value
+    def validate_with(attribute, value)
+      message = "Expected errors on #{attribute.inspect} with value `#{value.inspect}' after validation"
+      @object.send("#{attribute}=", value)
+      @object.valid?
+      if @object.errors[attribute].kind_of?(Array)
+        test_case.assert(!@object.errors[attribute].empty?, message)
+      else
+        test_case.assert(!@object.errors.on(attribute).nil?, message)
+      end
     end
   end
 end

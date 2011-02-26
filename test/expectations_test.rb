@@ -395,6 +395,66 @@ describe "Record expectations" do
   end
 end
 
+class Account < ActiveRecord::Base
+  validates_presence_of :username
+end
+
+describe "Validation expectations" do
+  include AssertionAssertions
+  
+  def configure_database
+    ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+    ActiveRecord::Migration.verbose = false
+  end
+
+  def setup_database
+    ActiveRecord::Schema.define(:version => 1) do
+      create_table :accounts do |t|
+        t.column :fullname, :string
+        t.column :email, :string
+        t.column :username, :string
+        t.column :password, :string
+      end
+    end
+  end
+
+  def teardown_database
+    ActiveRecord::Base.connection.tables.each do |table|
+      ActiveRecord::Base.connection.drop_table(table)
+    end
+  end
+  
+  before(:all) { configure_database }
+  
+  before do
+    setup_database
+    TestingAssertionsThemselves.setup
+    @account = Account.new
+  end
+  
+  after { teardown_database }
+  
+  it "succeeds when there are no validation errors on the attribute and there were no expected" do
+    @account.should.validate_with(:username, 'admin')
+    assert_assert_success
+  end
+  
+  it "fails when there are no validation errors on the attribute and there was one expected" do
+    @account.should.not.validate_with(:email, '')
+    assert_assert_failure("Expected errors on :email with value `\"\"' after validation")
+  end
+  
+  it "succeeds when there is a validation error on the attribute and there was one expected" do
+    @account.should.not.validate_with(:username, '')
+    assert_assert_success
+  end
+  
+  it "fails when there is a validation error on the attribute and there were no expected" do
+    @account.should.validate_with(:username, '')
+    assert_assert_failure("Expected :username with value `\"\"' to validate")
+  end
+end
+
 class TestController
   def request
     unless @request
