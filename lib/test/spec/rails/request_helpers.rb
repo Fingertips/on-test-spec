@@ -1,10 +1,6 @@
-module Test
-  module Spec
-    module Rails
-      module RequestHelpers
-        attr_reader :request
-      end
-    end
+module Test::Spec::Rails
+  module RequestHelpers
+    attr_reader :request
   end
 end
 
